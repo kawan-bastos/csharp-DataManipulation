@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="ConsoleApp1/02-OperacoesEmColecoes.csproj" />
+  <Project Path="ConsoleApp2/03-AbstraindoAFonteDeDados.csproj" />
+  <Project Path="ConsoleApp3/04-LINQ.csproj" />
+  <Project Path="ConsoleApp4/05-Strings.csproj" />
+  <Project Path="ConsoleApp5/06-ExpressoesRegulares.csproj" />
+  <Project Path="ConsoleApp6/07-Serializacao.csproj" />
+  <Project Path="DataManipulation/01-IntroAColecoes.csproj" />
+</Solution>
