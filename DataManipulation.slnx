@@ -1,9 +1,9 @@
 <Solution>
-  <Project Path="ConsoleApp1/02-OperacoesEmColecoes.csproj" />
-  <Project Path="ConsoleApp2/03-AbstraindoAFonteDeDados.csproj" />
-  <Project Path="ConsoleApp3/04-LINQ.csproj" />
-  <Project Path="ConsoleApp4/05-Strings.csproj" />
-  <Project Path="ConsoleApp5/06-ExpressoesRegulares.csproj" />
-  <Project Path="ConsoleApp6/07-Serializacao.csproj" />
+  <Project Path="02-OperacoesEmColecoes/02-OperacoesEmColecoes.csproj" Id="4b77c1a3-1580-473b-a167-a0e64e757e02" />
+  <Project Path="03-AbstraindoAFonteDeDados/03-AbstraindoAFonteDeDados.csproj" Id="1d7f7029-826d-4461-8350-eb362258eeb4" />
+  <Project Path="04-LINQ/04-LINQ.csproj" Id="830e818b-e9f2-45a0-a5a2-f8b729d36c52" />
+  <Project Path="05-Strings/05-Strings.csproj" Id="b602ebfe-6c13-43b7-988a-01d49f807ef7" />
+  <Project Path="06-ExpressoesRegulares/06-ExpressoesRegulares.csproj" Id="c86aa7b7-0ef3-4072-bfa6-a320b660dfb9" />
+  <Project Path="07-Serializacao/07-Serializacao.csproj" Id="dd305519-85d9-400b-a2bf-db829c53c12a" />
   <Project Path="DataManipulation/01-IntroAColecoes.csproj" />
 </Solution>
