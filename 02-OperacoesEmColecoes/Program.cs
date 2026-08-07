@@ -14,6 +14,18 @@ Rock.Add(musica4);
 Rock.Add(musica5);
 
 ExibirPlaylist(Rock);
+
+var musicaEncontrada = Rock.ObterPeloTitulo("Bohemian Rhapsody");
+if (musicaEncontrada is not null)
+{
+    Console.WriteLine($"Removendo a musica: {musicaEncontrada.Nome}");
+    Rock.Remove(musicaEncontrada);
+} else
+{
+    Console.WriteLine("Musica não encontrada");
+}
+
+
 void ExibirPlaylist(Playlist playlist)
 {
     Console.WriteLine($"Playlist: {playlist.Nome}");
@@ -21,6 +33,17 @@ void ExibirPlaylist(Playlist playlist)
     {
         Console.WriteLine($"Musica: {musica.Nome}, Artista: {musica.Artista}, Duração: {musica.Duracao} segundos");
     }
+}
+ExibirPlaylist(Rock);
+
+var musicaAleatoria = Rock.ObterAleatoria();
+if (musicaAleatoria is not null)
+{
+    Console.WriteLine($"Tocando musica aleatória: {musicaAleatoria.Nome}");
+}
+else
+{
+    Console.WriteLine("Playlist vazia");
 }
 
 class Musica
@@ -32,7 +55,7 @@ class Musica
 
 class Playlist : ICollection<Musica>
 {
-    List<Musica> Lista = [];
+    private List<Musica> Lista = [];
     public string Nome { get; set; }
 
     public int Count => Lista.Count;
@@ -47,6 +70,23 @@ class Playlist : ICollection<Musica>
     public void Clear()
     {
         Lista.Clear();
+    }
+
+    public Musica? ObterPeloTitulo(string titulo)
+    {
+        foreach(var musica in Lista)
+        {
+            if (musica.Nome == titulo) return musica;
+        }
+        return null;
+    }
+
+    public Musica? ObterAleatoria()
+    {
+        if (Lista.Count == 0) return null;
+        var random = new Random();
+        int indiceAleatorio = random.Next(0, Lista.Count);
+        return Lista[indiceAleatorio];
     }
 
     public bool Contains(Musica musica)
