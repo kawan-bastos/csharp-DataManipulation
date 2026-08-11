@@ -1,62 +1,109 @@
 ﻿using System.Collections;
 
-var musica1 = new Musica{Nome = "Bohemian Rhapsody", Artista = "Queen", Duracao = 180};
-var musica2 = new Musica{Nome = "Stairway to Heaven", Artista = "Led Zeppelin", Duracao = 480};
-var musica3 = new Musica { Nome = "Imagine", Artista = "John Lennon", Duracao = 210 };
-var musica4 = new Musica { Nome = "Hotel California", Artista = "Eagles", Duracao = 390 };
-var musica5 = new Musica { Nome = "Smells Like Teen Spirit", Artista = "Nirvana", Duracao = 300 };
+var musica1 = new Musica{Titulo = "Bohemian Rhapsody", Artista = "Queen", Duracao = 180};
+var musica2 = new Musica{Titulo = "Stairway to Heaven", Artista = "Led Zeppelin", Duracao = 480};
+var musica3 = new Musica { Titulo = "Imagine", Artista = "John Lennon", Duracao = 210 };
+var musica4 = new Musica { Titulo = "Hotel California", Artista = "Eagles", Duracao = 390 };
+var musica5 = new Musica { Titulo = "Smells Like Teen Spirit", Artista = "Nirvana", Duracao = 300 };
+var musica6 = new Musica { Titulo = "Something in the way", Artista = "Nirvana", Duracao = 360 };
+var musica7 = new Musica { Titulo = "Come as you are", Artista = "Nirvana", Duracao = 240 };
 
-var Rock = new Playlist { Nome = "Rock" };
+var Rock = new Playlist { Titulo = "Rock" };
 Rock.Add(musica1);
 Rock.Add(musica2);
 Rock.Add(musica3);
 Rock.Add(musica4);
 Rock.Add(musica5);
+Rock.Add(musica6);
+Rock.Add(musica7);
 
+RemoverMusica(Rock, "Imagine");
 ExibirPlaylist(Rock);
 
-var musicaEncontrada = Rock.ObterPeloTitulo("Bohemian Rhapsody");
-if (musicaEncontrada is not null)
-{
-    Console.WriteLine($"Removendo a musica: {musicaEncontrada.Nome}");
-    Rock.Remove(musicaEncontrada);
-} else
-{
-    Console.WriteLine("Musica não encontrada");
-}
+TocarMusicaAleatoria(Rock);
 
+Rock.OrdenarPorDuracao();
+ExibirPlaylist(Rock);
 
-void ExibirPlaylist(Playlist playlist)
+Rock.OrdenarPorArtista();
+ExibirPlaylist(Rock);
+
+Rock.OrdenarPorTitulo();
+ExibirPlaylist(Rock);
+void RemoverMusica(Playlist playlist, string titulo)
 {
-    Console.WriteLine($"Playlist: {playlist.Nome}");
-    foreach (var musica in playlist)
+    var musicaEncontrada = playlist.ObterPeloTitulo(titulo);
+    if (musicaEncontrada is not null)
     {
-        Console.WriteLine($"Musica: {musica.Nome}, Artista: {musica.Artista}, Duração: {musica.Duracao} segundos");
+        Console.WriteLine($"Removendo a musica: {musicaEncontrada.Titulo}");
+        playlist.Remove(musicaEncontrada);
+    }
+    else
+    {
+        Console.WriteLine("Musica não encontrada");
     }
 }
-ExibirPlaylist(Rock);
-
-var musicaAleatoria = Rock.ObterAleatoria();
-if (musicaAleatoria is not null)
+void ExibirPlaylist(Playlist playlist)
 {
-    Console.WriteLine($"Tocando musica aleatória: {musicaAleatoria.Nome}");
-}
-else
-{
-    Console.WriteLine("Playlist vazia");
+    Console.WriteLine($"Playlist: {playlist.Titulo}");
+    foreach (var musica in playlist)
+    {
+        Console.WriteLine($"Musica: {musica.Titulo}, Artista: {musica.Artista}, Duração: {musica.Duracao} segundos");
+    }
 }
 
-class Musica
+void TocarMusicaAleatoria(Playlist playlist)
 {
-    public string Nome { get; set; }
+    var musicaAleatoria = playlist.ObterAleatoria();
+    if (musicaAleatoria is not null)
+    {
+        Console.WriteLine($"Tocando musica aleatória: {musicaAleatoria.Titulo}");
+    }
+    else
+    {
+        Console.WriteLine("Playlist vazia");
+    }
+}
+
+class PorTitulo : IComparer<Musica>
+{
+    public int Compare(Musica? x, Musica? y)
+    {
+        if (x is null || y is null) return 0;
+        if (x is null) return 1;
+        if (y is null) return -1;
+        return x.Titulo.CompareTo(y.Titulo);
+    }
+}
+
+class PorArtista : IComparer<Musica>
+{
+    public int Compare(Musica? x, Musica? y)
+    {
+        if (x is null || y is null) return 0;
+        if (x is null) return 1;
+        if (y is null) return -1;
+        return x.Artista.CompareTo(y.Artista);
+    }
+}
+class Musica : IComparable
+{
+    public string Titulo { get; set; }
     public string Artista { get; set; }
     public int Duracao { get; set; }
+
+    public int CompareTo(object? other)
+    {
+        if (other is null) return 1;
+        if (other is Musica outraMusica) return this.Duracao.CompareTo(((outraMusica).Duracao));
+        return 0;
+    }
 }
 
 class Playlist : ICollection<Musica>
 {
     private List<Musica> Lista = [];
-    public string Nome { get; set; }
+    public string Titulo { get; set; }
 
     public int Count => Lista.Count;
 
@@ -76,7 +123,7 @@ class Playlist : ICollection<Musica>
     {
         foreach(var musica in Lista)
         {
-            if (musica.Nome == titulo) return musica;
+            if (musica.Titulo == titulo) return musica;
         }
         return null;
     }
@@ -89,6 +136,19 @@ class Playlist : ICollection<Musica>
         return Lista[indiceAleatorio];
     }
 
+    public void OrdenarPorDuracao()
+    {
+        Lista.Sort();
+    }
+
+    public void OrdenarPorArtista()
+    {
+        Lista.Sort(new PorArtista());
+    }
+    public void OrdenarPorTitulo()
+    {
+        Lista.Sort(new PorTitulo());
+    }   
     public bool Contains(Musica musica)
     {
         return Lista.Contains(musica);
