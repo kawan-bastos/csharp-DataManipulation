@@ -98,10 +98,23 @@ class Musica : IComparable
         if (other is Musica outraMusica) return this.Duracao.CompareTo(((outraMusica).Duracao));
         return 0;
     }
+
+    public override bool Equals(object? obj) // sobrescrevendo o método Equals para comparar músicas com base no título e artista
+    {
+        if (obj is null) return false;
+        if (obj is Musica outraMusica) return this.Titulo.Equals(outraMusica.Titulo) && this.Artista.Equals(outraMusica.Artista);
+        return false;
+    }
+
+    public override int GetHashCode() // sobrescrevendo o método GetHashCode para gerar um hash code baseado no título e artista
+    {
+        return this.Titulo.GetHashCode() ^ this.Artista.GetHashCode();
+    }
 }
 
 class Playlist : ICollection<Musica>
 {
+    private HashSet<Musica> set = []; // evita que seja adicionada músicas duplicadas, porem se for criada uma nova instancia de Musica com o mesmo titulo e artista, ela será adicionada!
     private List<Musica> Lista = [];
     public string Titulo { get; set; }
 
@@ -111,7 +124,7 @@ class Playlist : ICollection<Musica>
 
     public void Add(Musica musica)
     {
-        Lista.Add(musica);
+        if (set.Add(musica)) Lista.Add(musica);
     }
 
     public void Clear()
