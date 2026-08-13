@@ -22,21 +22,37 @@ asMelhores.Add(musica5);
 asMelhores.Add(musica6);
 asMelhores.Add(musica7);
 
-RemoverMusica(Rock, "Imagine");
-ExibirPlaylist(Rock);
+//RemoverMusica(Rock, "Imagine");
+//ExibirPlaylist(Rock);
 
-TocarMusicaAleatoria(Rock);
+//TocarMusicaAleatoria(Rock);
 
-Rock.OrdenarPorDuracao();
-ExibirPlaylist(Rock);
+//Rock.OrdenarPorDuracao();
+//ExibirPlaylist(Rock);
 
-Rock.OrdenarPorArtista();
-ExibirPlaylist(Rock);
+//Rock.OrdenarPorArtista();
+//ExibirPlaylist(Rock);
 
-Rock.OrdenarPorTitulo();
-ExibirPlaylist(Rock);
+//Rock.OrdenarPorTitulo();
+//ExibirPlaylist(Rock);
 
-ExibirAsMaisTocadas(Rock, asMelhores);
+//ExibirAsMaisTocadas(Rock, asMelhores);
+
+var player = new PlayerDeMusica();
+player.AdicionarNaFila(musica5);
+player.AdicionarNaFila(asMelhores);
+
+ExibirFila(player);
+player.RemoverDaFila("Smells Like Teen Spirit");
+ExibirFila(player);
+void ExibirFila(PlayerDeMusica player)
+{
+    Console.WriteLine("\nExibindo a fila de músicas:");
+    foreach (var musica in player.Fila())
+    {
+        Console.WriteLine($"\t - Musica: {musica.Titulo}, Artista: {musica.Artista}, Duração: {musica.Duracao} segundos");
+    }
+}
 
 void ExibirAsMaisTocadas(Playlist playlist1, Playlist playlist2)
 {
@@ -62,12 +78,12 @@ void ExibirAsMaisTocadas(Playlist playlist1, Playlist playlist2)
     List<KeyValuePair<Musica, int>> rankingOrdenado = [..ranking];
     rankingOrdenado.Sort(new PorContagem());
     var count = 1;
-    Console.WriteLine($"\n \t - Exbindo as Musicas Mais Tocadas:");
+    Console.WriteLine($"\n Exbindo as Musicas Mais Tocadas:");
     foreach (var par in rankingOrdenado)
     {
         if (count > 3) break;
         else count++;
-        Console.WriteLine($"Musica: {par.Key.Titulo}, Artista: {par.Key.Artista}, Vezes Tocadas: {par.Value}");
+        Console.WriteLine($"\t - Musica: {par.Key.Titulo}, Artista: {par.Key.Artista}, Vezes Tocadas: {par.Value}");
     }
 
 }
@@ -86,10 +102,10 @@ void RemoverMusica(Playlist playlist, string titulo)
 }
 void ExibirPlaylist(Playlist playlist)
 {
-    Console.WriteLine($"\n \t - Playlist: {playlist.Titulo}");
+    Console.WriteLine($"\n - Playlist: {playlist.Titulo}");
     foreach (var musica in playlist)
     {
-        Console.WriteLine($"Musica: {musica.Titulo}, Artista: {musica.Artista}, Duração: {musica.Duracao} segundos");
+        Console.WriteLine($"\t - Musica: {musica.Titulo}, Artista: {musica.Artista}, Duração: {musica.Duracao} segundos");
     }
 }
 
@@ -132,6 +148,61 @@ class PorArtista : IComparer<Musica>
         if (x is null) return 1;
         if (y is null) return -1;
         return x.Artista.CompareTo(y.Artista);
+    }
+}
+
+class PlayerDeMusica
+{
+    private Queue<Musica> fila = [];
+
+    public void AdicionarNaFila(Musica musica)
+    {
+        fila.Enqueue(musica);
+    }
+
+    public void AdicionarNaFila(Playlist playlist)
+    {
+        foreach (var musica in playlist)
+            AdicionarNaFila(musica);
+    }
+
+    public Musica? TocarProxima()
+    {
+        if (fila.Count == 0) return null;
+        return fila.Dequeue();
+    }
+
+    public void LimparFila()
+    {
+        fila.Clear();
+    }
+
+    public Musica? RemoverDaFila(string titulo)
+    {
+        Musica? removida = null;
+        int quantidade = fila.Count;
+
+        for (int i = 0; i < quantidade; i++)
+        {
+            Musica musica = fila.Dequeue();
+
+            if (removida == null && musica.Titulo == titulo)
+            {
+                removida = musica;
+            }
+            else
+            {
+                fila.Enqueue(musica);
+            }
+        }
+
+        return removida;
+    }
+
+    public IEnumerable<Musica> Fila()
+    {
+        foreach (var musica in fila)
+            yield return musica;
     }
 }
 class Musica : IComparable
@@ -234,4 +305,6 @@ class Playlist : ICollection<Musica>
     {
         return GetEnumerator();
     }
+    
+ 
 }
