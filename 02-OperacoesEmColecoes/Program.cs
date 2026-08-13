@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Specialized;
 
 var musica1 = new Musica{Titulo = "Bohemian Rhapsody", Artista = "Queen", Duracao = 180};
 var musica2 = new Musica{Titulo = "Stairway to Heaven", Artista = "Led Zeppelin", Duracao = 480};
@@ -16,6 +17,10 @@ Rock.Add(musica4);
 Rock.Add(musica5);
 Rock.Add(musica6);
 Rock.Add(musica7);
+var asMelhores = new Playlist { Titulo = "As Melhores do Nirvana" };
+asMelhores.Add(musica5);
+asMelhores.Add(musica6);
+asMelhores.Add(musica7);
 
 RemoverMusica(Rock, "Imagine");
 ExibirPlaylist(Rock);
@@ -30,6 +35,42 @@ ExibirPlaylist(Rock);
 
 Rock.OrdenarPorTitulo();
 ExibirPlaylist(Rock);
+
+ExibirAsMaisTocadas(Rock, asMelhores);
+
+void ExibirAsMaisTocadas(Playlist playlist1, Playlist playlist2)
+{
+    var ranking = new Dictionary<Musica, int>();
+    
+    foreach (var musica in  playlist1)
+    {
+        ranking.Add(musica, 1);
+    }
+
+    foreach (var musica in playlist2)
+    {
+       if (ranking.TryGetValue(musica, out int contagem))
+        {
+            contagem++;
+            ranking[musica] = contagem;
+        }else
+        {
+            ranking[musica] = 1;
+        }
+    }
+
+    List<KeyValuePair<Musica, int>> rankingOrdenado = [..ranking];
+    rankingOrdenado.Sort(new PorContagem());
+    var count = 1;
+    Console.WriteLine($"\n \t - Exbindo as Musicas Mais Tocadas:");
+    foreach (var par in rankingOrdenado)
+    {
+        if (count > 3) break;
+        else count++;
+        Console.WriteLine($"Musica: {par.Key.Titulo}, Artista: {par.Key.Artista}, Vezes Tocadas: {par.Value}");
+    }
+
+}
 void RemoverMusica(Playlist playlist, string titulo)
 {
     var musicaEncontrada = playlist.ObterPeloTitulo(titulo);
@@ -45,7 +86,7 @@ void RemoverMusica(Playlist playlist, string titulo)
 }
 void ExibirPlaylist(Playlist playlist)
 {
-    Console.WriteLine($"Playlist: {playlist.Titulo}");
+    Console.WriteLine($"\n \t - Playlist: {playlist.Titulo}");
     foreach (var musica in playlist)
     {
         Console.WriteLine($"Musica: {musica.Titulo}, Artista: {musica.Artista}, Duração: {musica.Duracao} segundos");
@@ -65,6 +106,13 @@ void TocarMusicaAleatoria(Playlist playlist)
     }
 }
 
+class PorContagem : IComparer<KeyValuePair<Musica, int>>
+{
+    public int Compare(KeyValuePair<Musica, int> x, KeyValuePair<Musica, int> y)
+    {
+        return y.Value.CompareTo(x.Value);
+    }
+}
 class PorTitulo : IComparer<Musica>
 {
     public int Compare(Musica? x, Musica? y)
@@ -102,11 +150,11 @@ class Musica : IComparable
     public override bool Equals(object? obj) // sobrescrevendo o método Equals para comparar músicas com base no título e artista
     {
         if (obj is null) return false;
-        if (obj is Musica outraMusica) return this.Titulo.Equals(outraMusica.Titulo) && this.Artista.Equals(outraMusica.Artista);
-        return false;
+        if (obj is Musica outraMusica) return this.Titulo.Equals(outraMusica.Titulo) && this.Artista.Equals(outraMusica.Artista);    
+        return false;                                                                                                                        // esse conjunto de métodos Equals e GetHashCode é importante para que o HashSet funcione corretamente, evitando a adição de músicas duplicadas na playlist.
     }
 
-    public override int GetHashCode() // sobrescrevendo o método GetHashCode para gerar um hash code baseado no título e artista
+    public override int GetHashCode() // sobrescrevendo o método GetHashCode para gerar um hash code baseado no título e artista 
     {
         return this.Titulo.GetHashCode() ^ this.Artista.GetHashCode();
     }
