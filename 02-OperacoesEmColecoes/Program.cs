@@ -22,29 +22,62 @@ asMelhores.Add(musica5);
 asMelhores.Add(musica6);
 asMelhores.Add(musica7);
 
-//RemoverMusica(Rock, "Imagine");
-//ExibirPlaylist(Rock);
+RemoverMusica(Rock, "Imagine");
+ExibirPlaylist(Rock);
 
-//TocarMusicaAleatoria(Rock);
+TocarMusicaAleatoria(Rock);
 
-//Rock.OrdenarPorDuracao();
-//ExibirPlaylist(Rock);
+Rock.OrdenarPorDuracao();
+ExibirPlaylist(Rock);
 
-//Rock.OrdenarPorArtista();
-//ExibirPlaylist(Rock);
+Rock.OrdenarPorArtista();
+ExibirPlaylist(Rock);
 
-//Rock.OrdenarPorTitulo();
-//ExibirPlaylist(Rock);
+Rock.OrdenarPorTitulo();
+ExibirPlaylist(Rock);
 
-//ExibirAsMaisTocadas(Rock, asMelhores);
+ExibirAsMaisTocadas(Rock, asMelhores);
 
 var player = new PlayerDeMusica();
+
 player.AdicionarNaFila(musica5);
 player.AdicionarNaFila(asMelhores);
 
 ExibirFila(player);
+ExibirHistorico(player);
+
 player.RemoverDaFila("Smells Like Teen Spirit");
+
 ExibirFila(player);
+ExibirHistorico(player);
+
+
+var proxima = player.TocarProxima();
+if (proxima is not null)
+    Console.WriteLine($"\n \t - Tocando musica próxima: {proxima.Titulo}");
+else
+    Console.WriteLine("\n \t - Não há música próxima para tocar.");
+
+ExibirFila(player);
+ExibirHistorico(player);
+
+var anterior = player.TocarMusicaAnterior();
+if (anterior is not null)
+    Console.WriteLine($"\n \t - Tocando musica anterior: {anterior.Titulo}");
+else
+    Console.WriteLine("\n \t - Não há música anterior para tocar.");
+
+ExibirFila(player);
+ExibirHistorico(player);
+
+void ExibirHistorico(PlayerDeMusica player)
+{
+    Console.WriteLine("\nExibindo o histórico de músicas tocadas:");
+    foreach (var musica in player.Historico())
+    {
+        Console.WriteLine($"\t - Musica: {musica.Titulo}, Artista: {musica.Artista}, Duração: {musica.Duracao} segundos");
+    }
+}
 void ExibirFila(PlayerDeMusica player)
 {
     Console.WriteLine("\nExibindo a fila de músicas:");
@@ -153,7 +186,8 @@ class PorArtista : IComparer<Musica>
 
 class PlayerDeMusica
 {
-    private Queue<Musica> fila = [];
+    private Stack<Musica> pilha = []; // Ultimo a entrar, primeiro a sair (LIFO)
+    private Queue<Musica> fila = []; // Primeiro a entrar, primeiro a sair (FIFO)
 
     public void AdicionarNaFila(Musica musica)
     {
@@ -169,7 +203,16 @@ class PlayerDeMusica
     public Musica? TocarProxima()
     {
         if (fila.Count == 0) return null;
-        return fila.Dequeue();
+        var musica = fila.Dequeue();
+        pilha.Push(musica);
+        return musica;
+
+    }
+
+    public Musica? TocarMusicaAnterior()
+    {
+        if (pilha.Count == 0) return null;
+        return pilha.Pop();    
     }
 
     public void LimparFila()
@@ -189,6 +232,7 @@ class PlayerDeMusica
             if (removida == null && musica.Titulo == titulo)
             {
                 removida = musica;
+                Console.WriteLine($"\n \t - Removendo musica da fila: {musica.Titulo}");
             }
             else
             {
@@ -202,6 +246,12 @@ class PlayerDeMusica
     public IEnumerable<Musica> Fila()
     {
         foreach (var musica in fila)
+            yield return musica;
+    }
+
+    public IEnumerable<Musica> Historico()
+    {
+        foreach (var musica in pilha)
             yield return musica;
     }
 }
