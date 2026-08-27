@@ -20,17 +20,42 @@ using System.Runtime.CompilerServices;
 using var arquivo = new FileStream("C:\\Users\\kawan\\source\\repos\\DataManipulation\\03-AbstraindoAFonteDeDados\\musicas.csv", FileMode.Open, FileAccess.Read);
 using var stream = new StreamReader(arquivo);
 
+//EstatiscasDaMusica(stream);
 
-var generos = ObterArquivo(stream)
+var duracao = ObterArquivo(stream)
+              .Where(m => m.Duracao > 350)
+              .Distinct()
+              .OrderByDescending(m => m.Duracao);
+
+
+foreach (var musica in duracao)
+{
+    Console.WriteLine(musica.Artista + " - " + musica.Titulo + " - " + musica.Duracao);
+}
+void EstatiscasDaMusica(StreamReader stream)
+{
+    var musica = ObterArquivo(stream).ToList();
+    Console.WriteLine($"\n Existem {musica.Count()} musicas na colecao");   
+    Console.WriteLine($"\n Existem {musica.Count(m => m.Duracao > 600)} musicas com mais de 10 minutos na colecao");   
+    Console.WriteLine($"\n A musica com menor duracao tem {musica.Min(m => m.Duracao)} segundos");   
+    Console.WriteLine($"\n A musica com maior duracao tem {musica.Max(m => m.Duracao)} segundos");   
+    Console.WriteLine($"\n A media de duracao das musicas desta colecao e de {musica.Average(m => m.Duracao)} segundos");   
+    Console.WriteLine($"\n Uma pessoa vai levar {(musica.Sum(m => m.Duracao)/(3600*24))} dias para ouvir todas as musicas");   
+}
+
+
+void OperacoesComProjecoes2(StreamReader stream)
+{
+    var generos = ObterArquivo(stream)
                 .SelectMany(m => m.Genero) // projecao ou transformacao 
                 .Distinct() // filtragem
                 .OrderBy(g => g);
 
-foreach (var genero in generos)
-{
-    Console.WriteLine(genero);
+    foreach (var genero in generos)
+    {
+        Console.WriteLine(genero);
+    }
 }
-
 void OperacoesComProjecoes(StreamReader stream)
 {
     var artistas = ObterArquivo(stream)
