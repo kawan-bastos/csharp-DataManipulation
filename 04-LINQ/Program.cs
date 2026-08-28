@@ -9,8 +9,8 @@
     //     [x] Ordene a coleção por artista
     //     [x] Ordene a coleção por artista e em seguida por músicas com duração crescente
     //     [ ] Crie uma coleção de artistas e suas músicas
-    //     [ ] Informe a duração média das músicas da coleção
-    //     [ ] Informe a duração total das músicas da coleção
+    //     [x] Informe a duração média das músicas da coleção
+    //     [x] Informe a duração total das músicas da coleção
     //     [ ] Informe qual artista tem mais músicas na coleção
  
 */
@@ -20,7 +20,18 @@ using System.Runtime.CompilerServices;
 using var arquivo = new FileStream("C:\\Users\\kawan\\source\\repos\\DataManipulation\\03-AbstraindoAFonteDeDados\\musicas.csv", FileMode.Open, FileAccess.Read);
 using var stream = new StreamReader(arquivo);
 
-EstatiscasDaMusica(stream);
+var artistas = ObterArquivo(stream)
+               .GroupBy(m => m.Artista);
+
+Console.WriteLine("Exibindo quantas músicas cada artista tem:");
+foreach (var artista in artistas.Take(5))
+{
+    Console.WriteLine($"{artista.Key}: {artista.Count()} músicas");
+    foreach (var musica in artista)   
+    {
+        Console.WriteLine($"\t - {musica.Titulo} ({musica.Duracao} segundos)");
+    }
+}
 void EstatiscasDaMusica(StreamReader stream)
 {
     var musica = ObterArquivo(stream).ToList();
