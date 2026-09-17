@@ -11,25 +11,76 @@
     //     [x] Crie uma coleção de artistas e suas músicas
     //     [x] Informe a duração média das músicas da coleção
     //     [x] Informe a duração total das músicas da coleção
-    //     [ ] Informe qual artista tem mais músicas na coleção
+    //     [x] Informe qual artista tem mais músicas na coleção
+    //     [x] Artista com pelo menos uma musica acima de 6 minutos (400 segundos)
+    //     [x] Artista com pelo menos uma musica de reggae
+    //     [x] Existem musica de Jazz na coleção? 
  
 */
+
+/*
+Fluxo Padrão: Estágio 1 (Origem Dados) > Estágio 2 > ... > Estágio N
+
+LINQ - Categorias de operações para manipulação de coleções
+============================================================
+
+Filtro (+)      | coleção c/ tam menor/igual atendendo condição | Where, Distinct
+Projeção (+)    | coleção transformada, do mesmo tipo ou não     | Select, SelectMany
+Ordenação (+)   | coleção ordenada pela expressão lambda        | OrderBy, ThenBy
+Agregação (*)   | valor único a partir de operação de acúmulo   | Sum, Min, Max
+Agrupamento (+) | coleção de grupos onde a chave é o argumento  | GroupBy
+Elementos (*)   | elemento único T a partir do argumento        | First, Last, MinBy
+Existência (*)  | booleano a partir da operação e argumento     | All, Any, Contains
+Conversão (*)   | coleção em outra estrutura                    | ToList, ToArray
+
++ operações avalidas sob demanda (yield)
+* operações avalidas imediatamente
+*/
+
 
 using System.Runtime.CompilerServices;
 
 using var arquivo = new FileStream("C:\\Users\\kawan\\source\\repos\\DataManipulation\\03-AbstraindoAFonteDeDados\\musicas.csv", FileMode.Open, FileAccess.Read);
 using var stream = new StreamReader(arquivo);
 
-var artistaComMaiorQtdeMusicas = ObterArquivo(stream)
+OperacoesDeVerificacaoDeExistencia(stream);
+
+void OperacoesDeVerificacaoDeExistencia(StreamReader stream)
+{
+    var musicas = ObterArquivo(stream).ToList();
+
+    var artistas = musicas
+        .GroupBy(m => m.Artista)
+        .Where(g => g.Any(m => m.Duracao > 400));
+    Console.WriteLine("Artistas com pelo menos uma música acima de 400 segundos:");
+    foreach (var artista in artistas)
+    {
+        Console.WriteLine($"\t - {artista.Key}");
+    }
+
+    var reggae = musicas
+        .GroupBy(m => m.Artista)
+        .Where(g => g.Any(m => m.Genero.Contains("Reggae")));
+    Console.WriteLine("Artistas com pelo menos uma música de reggae:");
+    foreach (var artista in reggae)
+    {
+        Console.WriteLine($"\t - {artista.Key}");
+    }
+
+}
+void ArtistaComMaioQtde(StreamReader stream)
+{
+    var artistaComMaiorQtdeMusicas = ObterArquivo(stream)
     .GroupBy(m => m.Artista)
-    .Select(g => new { Artista = g.Key, Musica = g, Total = g.Count()})
+    .Select(g => new { Artista = g.Key, Musica = g, Total = g.Count() })
     .MaxBy(a => a.Total);
 
-if  (artistaComMaiorQtdeMusicas is not null)
-{
-    Console.WriteLine($"O artista com mais músicas na coleção é {artistaComMaiorQtdeMusicas.Artista} com {artistaComMaiorQtdeMusicas.Total} músicas.");
-};
-
+    if (artistaComMaiorQtdeMusicas is not null)
+    {
+        Console.WriteLine($"O artista com mais músicas na coleção é {artistaComMaiorQtdeMusicas.Artista} com {artistaComMaiorQtdeMusicas.Total} músicas.");
+    }
+    ;
+}
 void OperacoesDeAgrupamento(StreamReader stream)
 {
     var artistas = ObterArquivo(stream)
