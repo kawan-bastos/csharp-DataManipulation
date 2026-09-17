@@ -8,7 +8,7 @@
     //     [x] Filtre a coleção por duração (por ex. maiores que 5 minutos)
     //     [x] Ordene a coleção por artista
     //     [x] Ordene a coleção por artista e em seguida por músicas com duração crescente
-    //     [ ] Crie uma coleção de artistas e suas músicas
+    //     [x] Crie uma coleção de artistas e suas músicas
     //     [x] Informe a duração média das músicas da coleção
     //     [x] Informe a duração total das músicas da coleção
     //     [ ] Informe qual artista tem mais músicas na coleção
@@ -20,16 +20,28 @@ using System.Runtime.CompilerServices;
 using var arquivo = new FileStream("C:\\Users\\kawan\\source\\repos\\DataManipulation\\03-AbstraindoAFonteDeDados\\musicas.csv", FileMode.Open, FileAccess.Read);
 using var stream = new StreamReader(arquivo);
 
-var artistas = ObterArquivo(stream)
-               .GroupBy(m => m.Artista);
+var artistaComMaiorQtdeMusicas = ObterArquivo(stream)
+    .GroupBy(m => m.Artista)
+    .Select(g => new { Artista = g.Key, Musica = g, Total = g.Count()})
+    .MaxBy(a => a.Total);
 
-Console.WriteLine("Exibindo quantas músicas cada artista tem:");
-foreach (var artista in artistas.Take(5))
+if  (artistaComMaiorQtdeMusicas is not null)
 {
-    Console.WriteLine($"{artista.Key}: {artista.Count()} músicas");
-    foreach (var musica in artista)   
+    Console.WriteLine($"O artista com mais músicas na coleção é {artistaComMaiorQtdeMusicas.Artista} com {artistaComMaiorQtdeMusicas.Total} músicas.");
+};
+
+void OperacoesDeAgrupamento(StreamReader stream)
+{
+    var artistas = ObterArquivo(stream)
+               .GroupBy(m => m.Artista);
+    Console.WriteLine("Exibindo quantas músicas cada artista tem:");
+    foreach (var artista in artistas)
     {
-        Console.WriteLine($"\t - {musica.Titulo} ({musica.Duracao} segundos)");
+        Console.WriteLine($"{artista.Key}: {artista.Count()} músicas");
+        foreach (var musica in artista)
+        {
+            Console.WriteLine($"\t - {musica.Titulo} ({musica.Duracao} segundos)");
+        }
     }
 }
 void EstatiscasDaMusica(StreamReader stream)
