@@ -2,12 +2,19 @@
 using var stream = new StreamReader(arquivo);
 
 var musicas = ObterMusicas(stream)
+    .Where(m => m.Artista.Equals("COldPlAy", StringComparison.OrdinalIgnoreCase))
     .Take(20);
     
 
 ExibirMusicasEmTabela(musicas);
 
-
+// métodos que utilizam StringComparison
+//"Coldplay".Equals("coldplay", StringComparison.OrdinalIgnoreCase);
+//"Coldplay".StartsWith("cold", StringComparison.OrdinalIgnoreCase);
+//"Coldplay".EndsWith("coldplay", StringComparison.OrdinalIgnoreCase);
+//"Coldplay".IndexOf("coldplay", StringComparison.OrdinalIgnoreCase);
+//"Coldplay".Contains("OLD", StringComparison.OrdinalIgnoreCase);
+//"Coldplay".Replace("cold", "warm", StringComparison.OrdinalIgnoreCase);
 
 void AlterandoOTitulo()
 {
