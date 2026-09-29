@@ -2,20 +2,41 @@
 using var stream = new StreamReader(arquivo);
 
 var musicas = ObterMusicas(stream)
-    .Where(m => m.Artista.Equals("COldPlAy", StringComparison.OrdinalIgnoreCase))
     .Take(20);
-    
 
 ExibirMusicasEmTabela(musicas);
 
-// métodos que utilizam StringComparison
-//"Coldplay".Equals("coldplay", StringComparison.OrdinalIgnoreCase);
-//"Coldplay".StartsWith("cold", StringComparison.OrdinalIgnoreCase);
-//"Coldplay".EndsWith("coldplay", StringComparison.OrdinalIgnoreCase);
-//"Coldplay".IndexOf("coldplay", StringComparison.OrdinalIgnoreCase);
-//"Coldplay".Contains("OLD", StringComparison.OrdinalIgnoreCase);
-//"Coldplay".Replace("cold", "warm", StringComparison.OrdinalIgnoreCase);
+void Interning()
+{
+    var artista1 = "Coldplay";
+    var artista2 = "Coldplay";
+    var artista3 = new string("Coldplay");
+    var artista4 = "COLDPLAY";
+    var artista5 = string.Intern(artista1.ToUpper());
 
+
+    Console.WriteLine(artista1 == artista2);
+    Console.WriteLine(ReferenceEquals(artista1, artista2));
+    Console.WriteLine(ReferenceEquals(artista1, artista3));
+    Console.WriteLine(ReferenceEquals(artista1, artista4));
+    Console.WriteLine(ReferenceEquals(artista4, artista5));
+}
+void ComparandoStrings(StreamReader stream)
+{
+    var musicas = ObterMusicas(stream)
+    .Where(m => m.Artista.Equals("COldPlAy", StringComparison.OrdinalIgnoreCase))
+    .Take(20);
+
+    // métodos que utilizam StringComparison
+    //"Coldplay".Equals("coldplay", StringComparison.OrdinalIgnoreCase);
+    //"Coldplay".StartsWith("cold", StringComparison.OrdinalIgnoreCase);
+    //"Coldplay".EndsWith("coldplay", StringComparison.OrdinalIgnoreCase);
+    //"Coldplay".IndexOf("coldplay", StringComparison.OrdinalIgnoreCase);
+    //"Coldplay".Contains("OLD", StringComparison.OrdinalIgnoreCase);
+    //"Coldplay".Replace("cold", "warm", StringComparison.OrdinalIgnoreCase);
+
+    ExibirMusicasEmTabela(musicas);
+}
 void AlterandoOTitulo()
 {
     var musicas = ObterMusicas(stream)
@@ -97,11 +118,11 @@ IEnumerable<Musica> ObterMusicas(StreamReader stream)
         var partes = linha.Split(';');
         var musica = new Musica
         {
-            Titulo = partes[0],
-            Artista = partes[1],
-            Duracao = Convert.ToInt32(partes[2]),
+            Titulo = string.IsNullOrWhiteSpace(partes[0]) ? "Titulo não encontrado" : partes[0],
+            Artista = string.IsNullOrWhiteSpace(partes[1]) ? "Artista não encontrado" : partes[1],
+            Duracao = int.TryParse(partes[2], out int duracao) ? duracao : 0,
             Generos = partes[3].Split(',', StringSplitOptions.TrimEntries),
-            Lancamento = Convert.ToDateTime(partes[4])
+            Lancamento = DateTime.TryParse(partes[4], out DateTime lancamento) ? lancamento : DateTime.Today
         };
         yield return musica;
         linha = stream.ReadLine();
