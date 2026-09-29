@@ -1,15 +1,54 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 
 using var arquivo = new FileStream("C:\\Users\\kawan\\source\\repos\\DataManipulation\\06-ExpressoesRegulares\\musicas.csv", FileMode.Open, FileAccess.Read);
 using var stream = new StreamReader(arquivo);
 
-var linha = "The Broken Road;Rolling Stones;6:39;Rock, Blues Rock;13/09/1974";
+void TitulosComNumerosRomanos()
+{
+    var regex = new Regex(@"\b[IVXLCDM]+\b");
+    var musicas = ObterMusicas(stream)
+        .Where(m => regex.IsMatch(m.Titulo))
+        .Take(20);
 
-var musicas = ObterMusicas(stream)
-    .Take(20);
+    ExibirMusicasEmTabela(musicas);
+}
+void MusicasComLetrasRepetidas()
+{
+    var regex = new Regex(@"^\w*(\w)\1{2,}$");
 
-ExibirMusicasEmTabela(musicas);
+    var musicas = ObterMusicas(stream)
+            .Where(m => regex.IsMatch(m.Titulo))
+            .Take(20);
+}
+void MusicasQueComecamETerminamComAMesmaPalavra()
+{
+    var regex = new Regex(@"^(\w+).*\1$");
 
+    var musicas = ObterMusicas(stream)
+            .Where(m => regex.IsMatch(m.Titulo))
+            .Take(20);
+}
+void MusicaComDuasPalavras()
+{
+    var regex = new Regex(@"^\w+ \w+$");
+
+    var musicas = ObterMusicas(stream)
+            .Where(m => regex.IsMatch(m.Titulo))
+            .Take(20);
+}
+void ArtistasComCaracteresEspeciais()
+{
+    var regex = new Regex(@"[^a-zA-Z0-9\s]");
+
+    var artistas = ObterMusicas(stream)
+        .Where(m => regex.IsMatch(m.Artista))
+        .Select(m => m.Artista)
+        .Distinct()
+        .OrderBy(a => a);
+
+    foreach (var artista in artistas) Console.WriteLine(artista);
+}
 void ExibirMusicas(IEnumerable<Musica> musicas)
 {
     var titulo = "\nMúsicas do arquivo:"; // string literal
